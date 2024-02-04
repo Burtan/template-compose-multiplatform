@@ -1,5 +1,4 @@
 import org.apache.tools.ant.taskdefs.condition.Os
-import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 
 plugins {
     alias(libs.plugins.android.library)
@@ -14,9 +13,9 @@ kotlin {
     jvmToolchain(17)
 
     androidTarget()
-    iosX64()
-    iosArm64()
-    iosSimulatorArm64()
+    //iosX64()
+    //iosArm64()
+    //iosSimulatorArm64()
     js(IR) {
         browser {
             testTask {
