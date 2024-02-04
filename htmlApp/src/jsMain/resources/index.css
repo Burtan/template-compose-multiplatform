@@ -1,0 +1,37 @@
+@import url(./theme/theme.css);
+
+body {
+    margin: 0;
+    height: 100vh;
+    overflow: clip;
+}
+
+#root {
+    height: 100vh;
+    width: 100vw;
+
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: center;
+}
+
+.imageContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.imageContainer:before {
+    content: "";
+    display: block;
+    height: 0;
+    width: 0;
+    padding-bottom: calc(1/1 * 100%);
+}
+
+mwc-top-app-bar-fixed {
+    /*old components*/
+    --mdc-theme-primary: var(--md-sys-color-surface);
+    --mdc-theme-on-primary: var(--md-sys-color-on-surface);
+}
