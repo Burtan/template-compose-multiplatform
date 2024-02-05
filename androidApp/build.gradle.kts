@@ -27,6 +27,16 @@ kotlin {
                 implementation(project(":shared"))
             }
         }
+        val androidUnitTest by getting {
+            dependencies {
+                implementation(libs.junit)
+                implementation(libs.robolectric)
+                implementation(libs.androidx.compose.ui.test.junit4)
+                implementation(libs.kotest.assertions.core)
+                implementation(libs.coroutines.test)
+                implementation(libs.hamcrest)
+            }
+        }
     }
 }
 
@@ -43,14 +53,6 @@ android {
         unitTests {
             isIncludeAndroidResources = true
         }
-    }
-    dependencies {
-        testImplementation(libs.junit)
-        testImplementation(libs.robolectric)
-        testImplementation(libs.androidx.compose.ui.test.junit4)
-        testImplementation(libs.kotest.assertions.core)
-        testImplementation(libs.coroutines.test)
-        testImplementation(libs.hamcrest)
     }
 }
 
