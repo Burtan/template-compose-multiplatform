@@ -7,6 +7,7 @@ import io.ktor.util.*
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
+import template.composemultiplatform.shared.MR
 import kotlin.random.Random
 
 @RunWith(RobolectricTestRunner::class)

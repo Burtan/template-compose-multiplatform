@@ -29,13 +29,15 @@ kotlin {
                 //implementation(libs.decompose.compose)
 
                 // material web
-                implementation(npm("@material/web", "1.0.0-pre.15"))
-                implementation(npm("@material-symbols/font-400", "0.5.5"))
-                implementation(npm("sass-loader", "13.2.2"))
-                implementation(npm("sass", "1.62.0"))
-                implementation(npm("@fontsource/roboto", "4.5.8"))
+                implementation(npm("@material/mwc-top-app-bar-fixed", "0.27.0"))
+                implementation(npm("@material/mwc-snackbar", "0.27.0"))
+                implementation(npm("@material/web", "1.2.0"))
+                implementation(npm("@material-symbols/font-400", "0.14.0"))
+                implementation(npm("sass-loader", "14.1.0"))
+                implementation(npm("sass", "1.70.0"))
+                implementation(npm("@fontsource/roboto", "5.0.8"))
 
-                implementation(devNpm("copy-webpack-plugin", "11.0.0"))
+                implementation(devNpm("copy-webpack-plugin", "12.0.2"))
 
                 implementation(project(":shared"))
             }

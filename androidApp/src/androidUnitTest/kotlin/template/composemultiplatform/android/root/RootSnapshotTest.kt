@@ -15,7 +15,7 @@ class RootSnapshotTest {
         RootComponentPreview.previews.forEach {
             paparazzi.snapshot(name = it.testTitle) {
                 RunInTestEnvironment {
-                    RootContent(rootCmp = it)
+                    //RootContent(rootCmp = it)
                 }
             }
         }

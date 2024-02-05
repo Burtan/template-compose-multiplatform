@@ -1,8 +1,10 @@
 import org.apache.tools.ant.taskdefs.condition.Os
+import org.jetbrains.compose.ExperimentalComposeLibrary
 
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.multiplatform)
+    alias(libs.plugins.compose.multiplatform)
     alias(libs.plugins.kotlin.plugin.serialization)
     alias(libs.plugins.kotlin.native.cocoapods)
     alias(libs.plugins.sqldelight)
@@ -13,9 +15,9 @@ kotlin {
     jvmToolchain(17)
 
     androidTarget()
-    //iosX64()
-    //iosArm64()
-    //iosSimulatorArm64()
+    iosX64()
+    iosArm64()
+    iosSimulatorArm64()
     js(IR) {
         browser {
             testTask {
@@ -39,6 +41,10 @@ kotlin {
                 implementation(libs.kotlinx.datetime)
                 implementation(libs.uuid)
                 implementation(libs.sqldelight.coroutines)
+
+                implementation(compose.foundation)
+                @OptIn(ExperimentalComposeLibrary::class)
+                implementation(compose.components.resources)
 
                 api(libs.decompose)
                 api(libs.coroutines.core)
