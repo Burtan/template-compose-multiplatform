@@ -1,17 +1,30 @@
 ;(function(config) {
-    const path = require("path");
-    const os = require("os");
+    // add webpack files to karma files
+    function KarmaWebpackOutputFramework(config) {
+        // This controller is instantiated and set during the preprocessor phase.
+        const controller = config.__karmaWebpackController;
 
-    // Adapted from: https://github.com/ryanclark/karma-webpack/issues/498#issuecomment-790040818
-    const output = {
-      path: path.join(os.tmpdir(), '_karma_webpack_') + Math.floor(Math.random() * 1000000),
+        // only if webpack has instantiated its controller
+        if (!controller) {
+            console.warn(
+                "Webpack has not instantiated controller yet.\n" +
+                "Check if you have enabled webpack preprocessor and framework before this framework"
+            )
+            return
+        }
+
+        config.files.push({
+            pattern: `${controller.outputPath}/**/*`,
+            included: false,
+            served: true,
+            watched: false
+        })
     }
-    config.set({
-      webpack: {...config.webpack, output}
-    });
-    config.files.push({
-      pattern: `${output.path}/**/*`,
-      watched: false,
-      included: false,
-    });
+
+    const KarmaWebpackOutputPlugin = {
+        'framework:webpack-output': ['factory', KarmaWebpackOutputFramework],
+    };
+
+    config.plugins.push(KarmaWebpackOutputPlugin);
+    config.frameworks.push("webpack-output");
 })(config);

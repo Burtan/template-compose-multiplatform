@@ -22,7 +22,7 @@ kotlin {
                 implementation(libs.androidx.activity.compose)
 
                 // decompose
-                implementation(libs.decompose.compose)
+                implementation(libs.decompose.compose.jetpack)
 
                 implementation(project(":shared"))
             }

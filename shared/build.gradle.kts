@@ -1,5 +1,8 @@
+import com.github.jk1.license.render.JsonReportRenderer
 import org.apache.tools.ant.taskdefs.condition.Os
 import org.jetbrains.compose.ExperimentalComposeLibrary
+import java.io.ByteArrayOutputStream
+import java.util.*
 
 plugins {
     alias(libs.plugins.android.library)
@@ -9,7 +12,10 @@ plugins {
     alias(libs.plugins.kotlin.native.cocoapods)
     alias(libs.plugins.sqldelight)
     alias(libs.plugins.moko.resources)
+    alias(libs.plugins.licenses)
 }
+
+version = getVersionNameFromGit()
 
 kotlin {
     jvmToolchain(17)
@@ -37,6 +43,9 @@ kotlin {
 
     sourceSets {
         commonMain {
+            resources.srcDir("${layout.buildDirectory.get()}/generated/licenses/")
+            resources.srcDir("${layout.buildDirectory.get()}/generated/buildInfo/")
+
             dependencies {
                 implementation(libs.kotlinx.datetime)
                 implementation(libs.uuid)
@@ -81,10 +90,8 @@ kotlin {
         }
 
         jsMain.dependencies {
-            implementation(libs.sqldelight.webWorker)
-            implementation(npm("sql.js", "1.10.2"))
+            api(libs.sqldelight.webWorker)
             implementation(npm("@sqlite.org/sqlite-wasm", "3.45.1-build1"))
-            implementation(npm("@cashapp/sqldelight-sqljs-worker", "2.0.1"))
             implementation(devNpm("copy-webpack-plugin", "12.0.2"))
             // ktor
             api(libs.ktor.client.js)
@@ -143,5 +150,64 @@ android {
         unitTests {
             isIncludeAndroidResources = true
         }
+    }
+}
+
+
+// generates licenses for iOS as it has no own module with Gradle
+licenseReport {
+    configurations = arrayOf(
+        "iosArm64CompileKlibraries",
+        "iosArm64CompilationApi",
+    )
+    renderers = arrayOf(JsonReportRenderer())
+    outputDir = File("${layout.buildDirectory.get()}/generated/licenses/").absolutePath
+}
+
+val createBuildInfoTaks = tasks.create("copyBuildInfo") {
+    // the task's configuration
+    val versionFile = File("${layout.buildDirectory.get()}/generated/buildInfo/version.txt")
+    val yearFile = File("${layout.buildDirectory.get()}/generated/buildInfo/year.txt")
+    outputs.files(yearFile.absolutePath, versionFile.absolutePath)
+
+    // the task's action
+    doLast {
+        yearFile.writeText(Calendar.getInstance().get(Calendar.YEAR).toString())
+        versionFile.parentFile.mkdirs()
+        versionFile.writeText(version.toString())
+    }
+}
+val licenseTask = tasks.getByName("generateLicenseReport")
+
+// configure build dependencies
+afterEvaluate {
+    listOf(licenseTask, createBuildInfoTaks).forEach {
+        tasks.getByName("metadataProcessResources").dependsOn(it)
+        tasks.getByName("jsProcessResources").dependsOn(it)
+        tasks.getByName("iosArm64ProcessResources").dependsOn(it)
+        tasks.getByName("iosSimulatorArm64ProcessResources").dependsOn(it)
+        tasks.getByName("iosX64ProcessResources").dependsOn(it)
+        tasks.getByName("processDebugJavaRes").dependsOn(it)
+        tasks.getByName("processReleaseJavaRes").dependsOn(it)
+
+        // TODO this is bugged, they should run AFTER license/buildInfo tasks
+        it.mustRunAfter("metadataCommonMainProcessResources")
+        it.mustRunAfter("metadataNativeMainProcessResources")
+        it.mustRunAfter("metadataIosMainProcessResources")
+        it.mustRunAfter("metadataAppleMainProcessResources")
+    }
+}
+
+fun getVersionNameFromGit() : String {
+    return try {
+        val stdout = ByteArrayOutputStream()
+        exec {
+            commandLine("git", "describe", "--tags", "--dirty")
+            standardOutput = stdout
+        }
+        stdout.toString().trim()
+    }
+    catch (ignored: Exception) {
+        ""
     }
 }

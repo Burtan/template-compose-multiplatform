@@ -15,4 +15,5 @@ plugins {
     alias(libs.plugins.compose.multiplatform) apply false
     alias(libs.plugins.moko.resources) apply false
     alias(libs.plugins.paparazzi) apply false
+    alias(libs.plugins.licenses) apply false
 }

@@ -9,34 +9,23 @@ import app.cash.sqldelight.driver.worker.WebWorkerDriver
 import org.w3c.dom.Worker
 import template.composemultiplatform.shared.ExampleDatabase
 
+@Suppress("UnsafeCastFromDynamic")
 actual class SqlDriverFactoryProvider {
     actual fun getDriverFactory(name: String): DriverFactory {
         return object : DriverFactory {
-            private var persistent: Boolean? = null
             override suspend fun createDriver(): SqlDriver {
-                @Suppress("UnsafeCastFromDynamic")
-                return try {
-                    val worker = Worker(js("""new URL("./sqlite-worker.js", import.meta.url)"""))
-                        .apply {
-                            postMessage(name)
-                        }
+                val worker = Worker(js("""new URL("./sqlite-worker.js", import.meta.url)"""))
+                    .apply {
+                        postMessage(name)
+                    }
 
-                    WebWorkerDriver(worker = worker)
-                        .apply {
-                            migrateIfNeeded(this)
-                        }
-                } catch (e: Throwable) {
-                    persistent = false
-                    val worker = Worker(js("""new URL("@cashapp/sqldelight-sqljs-worker/sqljs.worker.js", import.meta.url)"""))
-                    WebWorkerDriver(worker = worker)
-                        .apply {
-                            migrateIfNeeded(this)
-                        }
-                }
-
+                return WebWorkerDriver(worker = worker)
+                    .apply {
+                        migrateIfNeeded(this)
+                    }
             }
             override fun isAsync() = true
-            override fun isPersistent() = persistent
+            override fun isPersistent() = true
         }
     }
 }

@@ -1,5 +1,4 @@
 [versions]
-decompose-next = "3.0.0-alpha05"
 decompose = "2.2.2"
 agp = "8.2.2"
 coroutines = "1.7.3"
@@ -18,11 +17,11 @@ kotest = "5.8.0"
 ax-activity = "1.8.2"
 junit = "4.13.2"
 robolectric = "4.11.1"
+licenses = "2.5"
 
 [libraries]
 decompose = { group = "com.arkivanov.decompose", name = "decompose", version.ref = "decompose" }
-decompose-compose = { group = "com.arkivanov.decompose", name = "extensions-compose", version.ref = "decompose-next" }
-decompose-compose-android = { group = "com.arkivanov.decompose", name = "extensions-compose-android", version.ref = "decompose" }
+decompose-compose-jetpack = { group = "com.arkivanov.decompose", name = "extensions-compose-jetpack", version.ref = "decompose" }
 coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutines" }
 coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutines" }
 hamcrest = { group = "org.hamcrest", name = "hamcrest", version.ref = "hamcrest" }
@@ -65,3 +64,4 @@ kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref 
 kotlin-plugin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 kotlin-native-cocoapods = { id = "org.jetbrains.kotlin.native.cocoapods", version.ref = "kotlin" }
 paparazzi = { id = "app.cash.paparazzi", version.ref = "paparazzi" }
+licenses = { id = "com.github.jk1.dependency-license-report", version.ref = "licenses" }
