@@ -43,9 +43,6 @@ kotlin {
 
     sourceSets {
         commonMain {
-            resources.srcDir("${layout.buildDirectory.get()}/generated/licenses/")
-            resources.srcDir("${layout.buildDirectory.get()}/generated/buildInfo/")
-
             dependencies {
                 implementation(libs.kotlinx.datetime)
                 implementation(libs.uuid)
@@ -164,39 +161,23 @@ licenseReport {
     outputDir = File("${layout.buildDirectory.get()}/generated/licenses/").absolutePath
 }
 
-val createBuildInfoTaks = tasks.create("copyBuildInfo") {
+val createBuildInfoTask = tasks.create("copyBuildInfo") {
     // the task's configuration
-    val versionFile = File("${layout.buildDirectory.get()}/generated/buildInfo/version.txt")
-    val yearFile = File("${layout.buildDirectory.get()}/generated/buildInfo/year.txt")
-    outputs.files(yearFile.absolutePath, versionFile.absolutePath)
+    outputs.files("${layout.buildDirectory.get()}/generated/buildInfo/")
 
     // the task's action
     doLast {
+        val yearFile = File("${layout.buildDirectory.get()}/generated/buildInfo/year.txt")
+        yearFile.mkdirs()
         yearFile.writeText(Calendar.getInstance().get(Calendar.YEAR).toString())
+        val versionFile = File("${layout.buildDirectory.get()}/generated/buildInfo/version.txt")
         versionFile.parentFile.mkdirs()
         versionFile.writeText(version.toString())
     }
 }
 val licenseTask = tasks.getByName("generateLicenseReport")
-
-// configure build dependencies
-afterEvaluate {
-    listOf(licenseTask, createBuildInfoTaks).forEach {
-        tasks.getByName("metadataProcessResources").dependsOn(it)
-        tasks.getByName("jsProcessResources").dependsOn(it)
-        tasks.getByName("iosArm64ProcessResources").dependsOn(it)
-        tasks.getByName("iosSimulatorArm64ProcessResources").dependsOn(it)
-        tasks.getByName("iosX64ProcessResources").dependsOn(it)
-        tasks.getByName("processDebugJavaRes").dependsOn(it)
-        tasks.getByName("processReleaseJavaRes").dependsOn(it)
-
-        // TODO this is bugged, they should run AFTER license/buildInfo tasks
-        it.mustRunAfter("metadataCommonMainProcessResources")
-        it.mustRunAfter("metadataNativeMainProcessResources")
-        it.mustRunAfter("metadataIosMainProcessResources")
-        it.mustRunAfter("metadataAppleMainProcessResources")
-    }
-}
+kotlin.sourceSets.commonMain.get().resources.srcDir(createBuildInfoTask)
+kotlin.sourceSets.commonMain.get().resources.srcDir(licenseTask)
 
 fun getVersionNameFromGit() : String {
     return try {
