@@ -21,6 +21,7 @@ kotlin {
     jvmToolchain(17)
 
     androidTarget()
+    jvm()
     iosX64()
     iosArm64()
     iosSimulatorArm64()
