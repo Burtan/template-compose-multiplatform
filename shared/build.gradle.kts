@@ -15,6 +15,7 @@ plugins {
     alias(libs.plugins.licenses)
 }
 
+val packagePath = "template/composemultiplatform/shared/"
 version = getVersionNameFromGit()
 
 kotlin {
@@ -50,7 +51,6 @@ kotlin {
                 implementation(libs.sqldelight.coroutines)
 
                 implementation(compose.foundation)
-                @OptIn(ExperimentalComposeLibrary::class)
                 implementation(compose.components.resources)
 
                 api(libs.decompose)
@@ -80,11 +80,13 @@ kotlin {
             api(libs.kodein.android)
             api(libs.moko.resources.compose)
         }
-
-        val androidUnitTest by getting
-        androidUnitTest.dependencies {
-            implementation(libs.junit)
-            implementation(libs.robolectric)
+        val androidUnitTest by getting {
+            // must use an android test SourceSet!
+            android.sourceSets.getByName("test").resources.srcDir("src/commonTest/resources")
+            dependencies {
+                implementation(libs.junit)
+                implementation(libs.robolectric)
+            }
         }
 
         jsMain.dependencies {
@@ -101,6 +103,11 @@ kotlin {
         iosMain.dependencies {
             implementation(libs.sqldelight.native)
             implementation(libs.ktor.client.ios)
+        }
+
+        jvmMain.dependencies {
+            implementation(libs.sqldelight.jdbc)
+            implementation(libs.ktor.client.java)
         }
     }
 
@@ -159,26 +166,39 @@ licenseReport {
         "iosArm64CompilationApi",
     )
     renderers = arrayOf(JsonReportRenderer())
-    outputDir = File("${layout.buildDirectory.get()}/generated/licenses/").absolutePath
+    outputDir = File("${layout.buildDirectory.get()}/generated/buildInfo/$packagePath").absolutePath
 }
 
 val createBuildInfoTask = tasks.create("copyBuildInfo") {
+    val licenseTask = tasks.getByName("generateLicenseReport")
+    val buildInfoDir = "${layout.buildDirectory.get()}/generated/buildInfo/"
+
     // the task's configuration
-    outputs.files("${layout.buildDirectory.get()}/generated/buildInfo/")
+    outputs.dir(buildInfoDir)
+    inputs.files(licenseTask.outputs.files)
 
     // the task's action
     doLast {
-        val yearFile = File("${layout.buildDirectory.get()}/generated/buildInfo/year.txt")
-        yearFile.mkdirs()
-        yearFile.writeText(Calendar.getInstance().get(Calendar.YEAR).toString())
-        val versionFile = File("${layout.buildDirectory.get()}/generated/buildInfo/version.txt")
+        val versionFile = File("$buildInfoDir/$packagePath/version.txt")
         versionFile.parentFile.mkdirs()
         versionFile.writeText(version.toString())
+        val yearFile = File("$buildInfoDir/$packagePath/year.txt")
+        yearFile.parentFile.mkdirs()
+        yearFile.writeText(Calendar.getInstance().get(Calendar.YEAR).toString())
     }
 }
-val licenseTask = tasks.getByName("generateLicenseReport")
 kotlin.sourceSets.commonMain.get().resources.srcDir(createBuildInfoTask)
-kotlin.sourceSets.commonMain.get().resources.srcDir(licenseTask)
+android.sourceSets.getByName("main").resources.srcDir(createBuildInfoTask)
+
+/**
+ * Kotlin multiplatform does not copy main resources to js test folder. Do it manually.
+ */
+tasks.getByName("jsTestProcessResources", Copy::class) {
+    val resMain = tasks.getByName("jsProcessResources")
+
+    from(resMain)
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
 
 fun getVersionNameFromGit() : String {
     return try {
