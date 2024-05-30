@@ -1,5 +1,6 @@
 import com.github.jk1.license.render.JsonReportRenderer
 import org.apache.tools.ant.taskdefs.condition.Os
+import org.jetbrains.kotlin.gradle.targets.js.ir.DefaultIncrementalSyncTask
 import org.jetbrains.kotlin.gradle.targets.js.ir.KotlinJsIrLink
 import org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootExtension
 import org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootPlugin
@@ -35,7 +36,7 @@ kotlin {
                 implementation(compose.runtime)
                 implementation(libs.wrappers.js)
                 implementation(libs.wrappers.web)
-                //implementation(libs.decompose.compose)
+                implementation(libs.decompose.compose)
 
                 // material web
                 implementation(npm("@material/mwc-top-app-bar-fixed", "0.27.0"))
@@ -101,12 +102,6 @@ val copyWebLicenses = tasks.create<Copy>("copyWebLicenses") {
     }
 }
 
-// TODO
-// somehow includes processTestResources folder
-tasks.getByName<KotlinJsIrLink>("compileTestDevelopmentExecutableKotlinJs") {}
-// does not include processResources folder
-tasks.getByName<KotlinJsIrLink>("compileDevelopmentExecutableKotlinJs") {}
-
 afterEvaluate {
     multiplatformResources.resourcesSourceSets.getByName("jsMain").srcDir(copyWebLicenses)
 }
@@ -126,9 +121,4 @@ plugins.withType(NodeJsRootPlugin::class) {
 /**
  * Kotlin multiplatform does not copy main resources to js test folder. Do it manually.
  */
-tasks.getByName("jsTestProcessResources", Copy::class) {
-    val resMain = tasks.getByName("jsProcessResources")
-
-    from(resMain)
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-}
+// TODO, best way to do this?

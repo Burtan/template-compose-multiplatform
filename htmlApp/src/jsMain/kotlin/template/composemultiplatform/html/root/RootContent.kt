@@ -2,8 +2,8 @@ package template.composemultiplatform.html.root
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import dev.icerock.moko.resources.provider.JsStringProvider
-import template.composemultiplatform.html.subscribeAsState
 import template.composemultiplatform.shared.root.RootComponent
 import template.composemultiplatform.shared.root.RootInterface
 

@@ -13,7 +13,7 @@ import kotlin.random.Random
 @RunWith(RobolectricTestRunner::class)
 actual abstract class MultiPlatformTest {
     private val context = RuntimeEnvironment.getApplication()
-    actual suspend fun getTestImageData() = MR.files.test_image.readText(context).decodeBase64Bytes()
+    actual suspend fun getTestImageData() = MR.files.test_image_txt.readText(context).decodeBase64Bytes()
     actual fun getTestSqlDriverFactory(): DriverFactory {
         return SqlDriverFactoryProvider(context).getDriverFactory(Random.nextLong().toString())
     }

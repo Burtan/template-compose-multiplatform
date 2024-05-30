@@ -79,15 +79,3 @@ private fun LifecycleRegistry.attachToDocument() {
 }
 
 private val Document.visibilityState: String get() = asDynamic().visibilityState.unsafeCast<String>()
-
-@Composable
-fun <T : Any> Value<T>.subscribeAsState(policy: SnapshotMutationPolicy<T> = structuralEqualityPolicy()): State<T> {
-    val state = remember(this, policy) { mutableStateOf(value, policy) }
-
-    DisposableEffect(this) {
-        val disposable = observe { state.value = it }
-        onDispose { disposable.cancel() }
-    }
-
-    return state
-}

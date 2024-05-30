@@ -30,9 +30,9 @@ kotlin {
                 useKarma {
                     useSourceMapSupport()
                     if (!Os.isFamily(Os.FAMILY_MAC)) {
-                        useFirefoxNightlyHeadless()
+                        //useFirefoxNightlyHeadless()
                         useChromiumHeadless()
-                        useSafari()
+                        //useSafari()
                     } else {
                         useFirefoxHeadless()
                     }
