@@ -18,11 +18,11 @@ async function createDatabase(name) {
 
     if ("opfs" in sqlite3) {
         db = new sqlite3.oo1.OpfsDb(name);
-        log("OPFS is available, created persisted database at", db.filename);
+        console.log("OPFS is available, created persisted database at", db.filename);
     } else {
         db = new sqlite3.oo1.DB(name, "ct");
-        log("OPFS is not available, created transient database", db.filename);
-    }
+        console.log("OPFS is not available, created transient database", db.filename);
+  }
 }
 
 function handleMessage() {

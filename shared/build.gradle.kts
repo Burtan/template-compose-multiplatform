@@ -198,16 +198,6 @@ afterEvaluate {
     multiplatformResources.resourcesSourceSets["iosMain"].srcDir(copyIosLicenses)
 }
 
-/**
- * Kotlin multiplatform does not copy main resources to js test folder. Do it manually.
- */
-tasks.getByName("jsTestProcessResources", Copy::class) {
-    val resMain = tasks.getByName("jsProcessResources")
-
-    from(resMain)
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-}
-
 fun getVersionNameFromGit() : String {
     return try {
         val stdout = ByteArrayOutputStream()
