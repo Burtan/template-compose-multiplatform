@@ -13,6 +13,7 @@ local.properties
 *yarn.lock
 kotlin-js-store/
 moko-resources-generated.js
+.kotlin
 
 ## fastlane specific
 **/fastlane/report.xml

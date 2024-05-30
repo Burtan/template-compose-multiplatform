@@ -37,6 +37,7 @@ class RootComponent(
             navigator = nav,
             stack = stack,
             getPath = ::getPathForConfig,
+            serializer = Config.serializer(),
             getConfiguration = ::getConfigForPath,
         )
     }

@@ -8,7 +8,7 @@ import template.composemultiplatform.shared.MR
 import kotlin.random.Random
 
 actual abstract class MultiPlatformTest {
-    actual suspend fun getTestImageData() = MR.files.test_image.getText().decodeBase64Bytes()
+    actual suspend fun getTestImageData() = MR.files.test_image_txt.getText().decodeBase64Bytes()
     actual fun getTestSqlDriverFactory(): DriverFactory {
         return SqlDriverFactoryProvider().getDriverFactory(Random.nextLong().toString())
     }
