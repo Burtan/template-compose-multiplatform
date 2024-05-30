@@ -7,7 +7,6 @@ import java.util.*
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.multiplatform)
-    alias(libs.plugins.compose.multiplatform)
     alias(libs.plugins.kotlin.plugin.serialization)
     alias(libs.plugins.kotlin.native.cocoapods)
     alias(libs.plugins.sqldelight)
@@ -15,7 +14,6 @@ plugins {
     alias(libs.plugins.licenses)
 }
 
-val packagePath = "template/composemultiplatform/shared/"
 version = getVersionNameFromGit()
 
 kotlin {
@@ -50,9 +48,6 @@ kotlin {
                 implementation(libs.uuid)
                 implementation(libs.sqldelight.coroutines)
 
-                implementation(compose.foundation)
-                implementation(compose.components.resources)
-
                 api(libs.decompose)
                 api(libs.coroutines.core)
                 api(libs.ktor.client.core)
@@ -81,8 +76,6 @@ kotlin {
             api(libs.moko.resources.compose)
         }
         val androidUnitTest by getting {
-            // must use an android test SourceSet!
-            android.sourceSets.getByName("test").resources.srcDir("src/commonTest/resources")
             dependencies {
                 implementation(libs.junit)
                 implementation(libs.robolectric)
@@ -91,7 +84,7 @@ kotlin {
 
         jsMain.dependencies {
             api(libs.sqldelight.webWorker)
-            implementation(npm("@sqlite.org/sqlite-wasm", "3.45.1-build1"))
+            implementation(npm("@sqlite.org/sqlite-wasm", "3.46.0-build1"))
             implementation(devNpm("copy-webpack-plugin", "12.0.2"))
             // ktor
             api(libs.ktor.client.js)
@@ -122,11 +115,11 @@ kotlin {
             isStatic = false // SwiftUI preview requires a dynamic framework
             baseName = "Shared"
             // decompose navigation
-            export("com.arkivanov.decompose:decompose:2.2.2")
-            export("com.arkivanov.essenty:lifecycle:1.3.0")
+            export("com.arkivanov.decompose:decompose:3.0.0")
+            export("com.arkivanov.essenty:lifecycle:2.0.0")
 
             // shared resources
-            export("dev.icerock.moko:resources:0.24.0-alpha-2")
+            export("dev.icerock.moko:resources:0.24.0-beta-4")
             export("dev.icerock.moko:graphics:0.9.0") // toUIColor here
         }
     }
@@ -163,32 +156,47 @@ android {
 licenseReport {
     configurations = arrayOf(
         "iosArm64CompileKlibraries",
-        "iosArm64CompilationApi",
     )
     renderers = arrayOf(JsonReportRenderer())
-    outputDir = File("${layout.buildDirectory.get()}/generated/buildInfo/$packagePath").absolutePath
 }
 
-val createBuildInfoTask = tasks.create("copyBuildInfo") {
-    val licenseTask = tasks.getByName("generateLicenseReport")
+val createBuildInfo = tasks.create("createBuildInfo") {
     val buildInfoDir = "${layout.buildDirectory.get()}/generated/buildInfo/"
 
     // the task's configuration
     outputs.dir(buildInfoDir)
-    inputs.files(licenseTask.outputs.files)
 
     // the task's action
     doLast {
-        val versionFile = File("$buildInfoDir/$packagePath/version.txt")
+        val versionFile = File("$buildInfoDir/files/version.txt")
         versionFile.parentFile.mkdirs()
         versionFile.writeText(version.toString())
-        val yearFile = File("$buildInfoDir/$packagePath/year.txt")
+        val yearFile = File("$buildInfoDir/files/year.txt")
         yearFile.parentFile.mkdirs()
         yearFile.writeText(Calendar.getInstance().get(Calendar.YEAR).toString())
     }
 }
-kotlin.sourceSets.commonMain.get().resources.srcDir(createBuildInfoTask)
-android.sourceSets.getByName("main").resources.srcDir(createBuildInfoTask)
+
+val copyIosLicenses = tasks.create<Copy>("copyIosLicenses") {
+    val licenseTask = tasks.getByName("generateLicenseReport")
+    val iosLicensesDir = "${layout.buildDirectory.get()}/generated/iosLicenses"
+
+    // the task's configuration
+    from(licenseTask)
+    into("$iosLicensesDir/files")
+
+    // output must be the base directory with the dir "files"
+    outputs.dir(iosLicensesDir)
+
+    rename {
+        it.replace("index", "iosLicenses")
+    }
+}
+
+afterEvaluate {
+    multiplatformResources.resourcesSourceSets["commonMain"].srcDir(createBuildInfo)
+    multiplatformResources.resourcesSourceSets["iosMain"].srcDir(copyIosLicenses)
+}
 
 /**
  * Kotlin multiplatform does not copy main resources to js test folder. Do it manually.
