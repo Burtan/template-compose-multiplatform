@@ -15,7 +15,6 @@ plugins {
     alias(libs.plugins.licenses)
 }
 
-val packagePath = "template/composemultiplatform/shared/"
 version = getVersionNameFromGit()
 
 kotlin {
@@ -112,25 +111,25 @@ kotlin {
         }
     }
 
-    cocoapods {
-        name = "Shared"
-        version = "0.1.0"
-        summary = "Shared code"
-        homepage = "None"
-        ios.deploymentTarget = "14.7"
-        podfile = project.file("../iosApp/Podfile")
-        framework {
-            isStatic = false // SwiftUI preview requires a dynamic framework
-            baseName = "Shared"
-            // decompose navigation
-            export(libs.decompose.asProvider().get().toString())
-            export("com.arkivanov.essenty:lifecycle:2.2.1")
-
-            // shared resources
-            export(libs.moko.resources.asProvider().get().toString())
-            export("dev.icerock.moko:graphics:0.9.0") // toUIColor here
-        }
-    }
+//    cocoapods {
+//        name = "Shared"
+//        version = "0.1.0"
+//        summary = "Shared code"
+//        homepage = "None"
+//        ios.deploymentTarget = "14.7"
+//        podfile = project.file("../iosApp/Podfile")
+//        framework {
+//            isStatic = false // SwiftUI preview requires a dynamic framework
+//            baseName = "Shared"
+//            // decompose navigation
+//            export(libs.decompose.asProvider().get().toString())
+//            export("com.arkivanov.essenty:lifecycle:2.2.1")
+//
+//            // shared resources
+//            export(libs.moko.resources.asProvider().get().toString())
+//            export("dev.icerock.moko:graphics:0.9.0") // toUIColor here
+//        }
+//    }
 }
 
 sqldelight {
@@ -143,7 +142,8 @@ sqldelight {
 }
 
 multiplatformResources {
-    resourcesPackage = "template.composemultiplatform.shared"
+    resourcesPackage.set("template.composemultiplatform.shared")
+    resourcesClassName.set("SharedRes")
 }
 
 android {
