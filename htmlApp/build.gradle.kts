@@ -1,7 +1,5 @@
 import com.github.jk1.license.render.JsonReportRenderer
 import org.apache.tools.ant.taskdefs.condition.Os
-import org.jetbrains.kotlin.gradle.targets.js.ir.DefaultIncrementalSyncTask
-import org.jetbrains.kotlin.gradle.targets.js.ir.KotlinJsIrLink
 import org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootExtension
 import org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootPlugin
 
@@ -14,7 +12,7 @@ plugins {
 }
 
 kotlin {
-    jvmToolchain(17)
+    jvmToolchain(21)
 
     js(IR) {
         browser {
@@ -41,13 +39,16 @@ kotlin {
                 // material web
                 implementation(npm("@material/mwc-top-app-bar-fixed", "0.27.0"))
                 implementation(npm("@material/mwc-snackbar", "0.27.0"))
-                implementation(npm("@material/web", "1.5.0"))
-                implementation(npm("@material-symbols/font-400", "0.14.0"))
-                implementation(npm("sass-loader", "14.1.0"))
-                implementation(npm("sass", "1.70.0"))
-                implementation(npm("@fontsource/roboto", "5.0.8"))
+                implementation(npm("@material/web", "2.2.0"))
+                implementation(npm("@material-symbols/font-400", "0.23.0"))
+                implementation(npm("@fontsource/roboto", "5.1.0"))
 
+                // webpack plugins
                 implementation(devNpm("copy-webpack-plugin", "12.0.2"))
+                implementation(devNpm("workbox-webpack-plugin", "7.3.0"))
+                implementation(devNpm("css-loader", "7.1.2"))
+                implementation(devNpm("style-loader", "4.0.0"))
+                implementation(devNpm("sass-loader", "16.0.4"))
 
                 implementation(project(":shared"))
             }
@@ -117,8 +118,3 @@ plugins.withType(NodeJsRootPlugin::class) {
             }
         }
 }
-
-/**
- * Kotlin multiplatform does not copy main resources to js test folder. Do it manually.
- */
-// TODO, best way to do this?

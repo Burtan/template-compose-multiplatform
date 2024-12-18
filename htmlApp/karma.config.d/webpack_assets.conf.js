@@ -27,4 +27,16 @@
 
     config.plugins.push(KarmaWebpackOutputPlugin);
     config.frameworks.push("webpack-output");
+
+    // needed since kotlin 2.1.0
+    config.proxies = {
+        "/": "/base/kotlin/"
+    }
+    config.files.push(
+        {
+            "pattern": "./kotlin/**/*",
+            "watched": false,
+            "included": false
+        }
+    )
 })(config);

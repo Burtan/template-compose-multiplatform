@@ -9,7 +9,7 @@ plugins {
 }
 
 kotlin {
-    jvmToolchain(17)
+    jvmToolchain(21)
 
     androidTarget()
 
@@ -43,7 +43,7 @@ kotlin {
 
 android {
     namespace = "template.composemultiplatform.android"
-    compileSdk = 34
+    compileSdk = 35
     defaultConfig {
         applicationId = "template.composemultiplatform.android"
         minSdk = 21
@@ -60,13 +60,13 @@ android {
 fun getVersionCodeFromGit() : Int {
     return try {
         val code = ByteArrayOutputStream()
-        exec {
+        providers.exec {
             commandLine("git", "tag", "--list")
             standardOutput = code
         }
         code.toString().split("\n").size
     }
-    catch (ignored: Exception) {
+    catch (_: Exception) {
         1
     }
 }
@@ -74,13 +74,13 @@ fun getVersionCodeFromGit() : Int {
 fun getVersionNameFromGit() : String {
     return try {
         val stdout = ByteArrayOutputStream()
-        exec {
+        providers.exec {
             commandLine("git", "describe", "--tags", "--dirty")
             standardOutput = stdout
         }
         stdout.toString().trim()
     }
-    catch (ignored: Exception) {
+    catch (_: Exception) {
         ""
     }
 }

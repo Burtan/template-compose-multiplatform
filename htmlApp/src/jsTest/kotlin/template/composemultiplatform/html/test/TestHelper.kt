@@ -1,31 +1,21 @@
 package template.composemultiplatform.html.test
 
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import template.composemultiplatform.html.test.common.findChild
-import template.composemultiplatform.html.test.common.setIndeterminateProgressToZero
+import androidx.compose.runtime.*
 import dev.icerock.moko.resources.provider.JsStringProvider
-import js.import.import
+import js.import.importAsync
 import js.promise.Promise
-import js.promise.await
 import kotlinx.browser.document
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.takeWhile
-import org.jetbrains.compose.web.css.height
-import org.jetbrains.compose.web.css.maxHeight
-import org.jetbrains.compose.web.css.maxWidth
-import org.jetbrains.compose.web.css.px
-import org.jetbrains.compose.web.css.width
+import org.jetbrains.compose.web.css.*
 import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.dom.Text
 import org.jetbrains.compose.web.testutils.ComposeWebExperimentalTestsApi
 import org.jetbrains.compose.web.testutils.runTest
+import template.composemultiplatform.html.test.common.findChild
+import template.composemultiplatform.html.test.common.setIndeterminateProgressToZero
 import template.composemultiplatform.shared.MR
 import template.composemultiplatform.shared.common.Testable
 import kotlin.time.Duration
@@ -45,13 +35,13 @@ inline fun <reified T: Testable> runMobileTest(
     // when executing multiple tests, old testContainers have to be removed
     document.getElementById("root")?.remove()
 
-    // imports
-    import<Any>("@fontsource/roboto").await()
-    import<Any>("@material-symbols/font-400/outlined.css").await()
-    val crypto: dynamic = import<Any>("crypto-es/lib/md5.js").await()
-    val htmlToImage: dynamic = import<Any>("html-to-image").await()
-    val chaiKarma: dynamic = import<Any>("chai-karma-snapshot").await()
-    val chai: dynamic = import<Any>("chai").await()
+    // importAsyncs
+    importAsync<Any>("@fontsource/roboto").await()
+    importAsync<Any>("@material-symbols/font-400/outlined.css").await()
+    val crypto: dynamic = importAsync<Any>("crypto-es/lib/md5.js").await()
+    val htmlToImage: dynamic = importAsync<Any>("html-to-image").await()
+    val chaiKarma: dynamic = importAsync<Any>("chai-karma-snapshot").await()
+    val chai: dynamic = importAsync<Any>("chai").await()
     val describe: (title: String, fn: (suite: dynamic) -> dynamic) -> dynamic = js("describe")
     val it: (title: String, fn: () -> dynamic) -> dynamic = js("it")
 

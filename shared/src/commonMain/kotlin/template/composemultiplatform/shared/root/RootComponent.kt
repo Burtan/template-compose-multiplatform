@@ -1,7 +1,6 @@
 package template.composemultiplatform.shared.root
 
 import com.arkivanov.decompose.ComponentContext
-import com.arkivanov.decompose.ExperimentalDecomposeApi
 import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.childStack
@@ -14,7 +13,6 @@ import template.composemultiplatform.shared.birds.BirdsComponent
 import template.composemultiplatform.shared.fishes.FishesComponent
 import template.composemultiplatform.shared.mammals.MammalsComponent
 
-@OptIn(ExperimentalDecomposeApi::class)
 class RootComponent(
     context: ComponentContext,
     private val deepLink: DeepLink = DeepLink.None,
@@ -33,13 +31,12 @@ class RootComponent(
     override val childStack: Value<ChildStack<*, RootInterface.Child>> = stack
 
     init {
-        webHistoryController?.attach(
-            navigator = nav,
-            stack = stack,
-            getPath = ::getPathForConfig,
-            serializer = Config.serializer(),
-            getConfiguration = ::getConfigForPath,
-        )
+//        webHistoryController?.attach(
+//            navigator = nav,
+//            stack = stack,
+//            getPath = ::getPathForConfig,
+//            getConfiguration = ::getConfigForPath,
+//        )
     }
 
     private fun child(config: Config, cmpContext: ComponentContext): RootInterface.Child {
