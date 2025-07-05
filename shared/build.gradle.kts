@@ -88,9 +88,8 @@ kotlin {
 
         jsMain.dependencies {
             api(libs.sqldelight.webWorker)
-            implementation(npm("@sqlite.org/sqlite-wasm", "3.45.1-build1"))
-            implementation(devNpm("copy-webpack-plugin", "12.0.2"))
-            // ktor
+            implementation(npm("@sqlite.org/sqlite-wasm", "3.50.1-build1"))
+            implementation(devNpm("copy-webpack-plugin", "13.0.0"))            // ktor
             api(libs.ktor.client.js)
         }
         jsTest.dependencies {

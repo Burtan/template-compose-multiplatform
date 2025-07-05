@@ -39,16 +39,12 @@ kotlin {
                 // material web
                 implementation(npm("@material/mwc-top-app-bar-fixed", "0.27.0"))
                 implementation(npm("@material/mwc-snackbar", "0.27.0"))
-                implementation(npm("@material/web", "2.2.0"))
-                implementation(npm("@material-symbols/font-400", "0.23.0"))
-                implementation(npm("@fontsource/roboto", "5.1.0"))
+                implementation(npm("@material/web", "2.3.0"))
+                implementation(npm("@material-symbols/font-400", "0.31.8"))
+                implementation(npm("@fontsource/roboto", "5.2.6"))
 
-                // webpack plugins
-                implementation(devNpm("copy-webpack-plugin", "12.0.2"))
+                implementation(devNpm("copy-webpack-plugin", "13.0.0"))
                 implementation(devNpm("workbox-webpack-plugin", "7.3.0"))
-                implementation(devNpm("css-loader", "7.1.2"))
-                implementation(devNpm("style-loader", "4.0.0"))
-                implementation(devNpm("sass-loader", "16.0.4"))
 
                 implementation(project(":shared"))
             }
@@ -64,9 +60,8 @@ kotlin {
                 implementation(npm("karma-viewport", "1.0.9"))
                 implementation(npm("karma-snapshot", "0.6.0"))
                 implementation(npm("karma-mocha-snapshot", "0.2.1"))
-                implementation(npm("karma-mocha-reporter", "2.2.5"))
-                implementation(npm("chai", "4.3.7"))
-                implementation(npm("chai-karma-snapshot", "0.8.0"))
+                implementation(npm("html-to-image", "1.11.13"))
+                implementation(npm("crypto-es", "2.1.0"))
             }
         }
     }
