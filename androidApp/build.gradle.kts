@@ -1,5 +1,3 @@
-import java.io.ByteArrayOutputStream
-
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.multiplatform)
@@ -28,7 +26,7 @@ kotlin {
                 implementation(project(":shared"))
             }
         }
-        val androidUnitTest by getting {
+        androidUnitTest {
             dependencies {
                 implementation(libs.junit)
                 implementation(libs.robolectric)
@@ -58,29 +56,17 @@ android {
 }
 
 fun getVersionCodeFromGit() : Int {
-    return try {
-        val code = ByteArrayOutputStream()
-        providers.exec {
-            commandLine("git", "tag", "--list")
-            standardOutput = code
-        }
-        code.toString().split("\n").size
+    val result = providers.exec {
+        commandLine("git", "tag", "--list")
     }
-    catch (_: Exception) {
-        1
-    }
+    return result.standardOutput.asText.get()
+        .split("\n")
+        .size
 }
 
 fun getVersionNameFromGit() : String {
-    return try {
-        val stdout = ByteArrayOutputStream()
-        providers.exec {
-            commandLine("git", "describe", "--tags", "--dirty")
-            standardOutput = stdout
-        }
-        stdout.toString().trim()
+    val result = providers.exec {
+        commandLine("git", "describe", "--tags", "--dirty")
     }
-    catch (_: Exception) {
-        ""
-    }
+    return result.standardOutput.asText.get().trim()
 }

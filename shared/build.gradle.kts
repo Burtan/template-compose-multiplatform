@@ -1,6 +1,5 @@
 import com.github.jk1.license.render.JsonReportRenderer
 import org.apache.tools.ant.taskdefs.condition.Os
-import java.io.ByteArrayOutputStream
 import java.util.*
 
 plugins {
@@ -205,15 +204,8 @@ afterEvaluate {
 }
 
 fun getVersionNameFromGit() : String {
-    return try {
-        val stdout = ByteArrayOutputStream()
-        providers.exec {
-            commandLine("git", "describe", "--tags", "--dirty")
-            standardOutput = stdout
-        }
-        stdout.toString().trim()
+    val result = providers.exec {
+        commandLine("git", "describe", "--tags", "--dirty")
     }
-    catch (_: Exception) {
-        ""
-    }
+    return result.standardOutput.asText.get().trim()
 }

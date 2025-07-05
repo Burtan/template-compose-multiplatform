@@ -87,7 +87,7 @@ multiplatformResources {
     resourcesClassName = "WebRes"
 }
 
-val copyWebLicenses = tasks.create<Copy>("copyWebLicenses") {
+val copyWebLicenses = tasks.register<Copy>("copyWebLicenses") {
     val licenseTask = tasks.getByName("generateLicenseReport")
     val webLicensesDir = "${layout.buildDirectory.get()}/generated/webLicenses/"
 
