@@ -1,6 +1,6 @@
 import com.github.jk1.license.render.JsonReportRenderer
 import org.apache.tools.ant.taskdefs.condition.Os
-import org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootExtension
+import org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsEnvSpec
 import org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootPlugin
 
 plugins {
@@ -111,10 +111,9 @@ afterEvaluate {
  * npm downloaded by kotlin is incompatible with alpine linux
  */
 plugins.withType(NodeJsRootPlugin::class) {
-    (project.extensions["kotlinNodeJs"] as NodeJsRootExtension)
-        .apply {
-            if (Os.isFamily(Os.FAMILY_UNIX)) {
-                download = false
-            }
+    project.configure<NodeJsEnvSpec> {
+        if (Os.isFamily(Os.FAMILY_UNIX)) {
+            download = false
         }
+    }
 }
