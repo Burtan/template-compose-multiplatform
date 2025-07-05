@@ -45,8 +45,6 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                implementation(libs.kotlinx.datetime)
-                implementation(libs.uuid)
                 implementation(libs.sqldelight.coroutines)
 
                 implementation(compose.foundation)
@@ -80,7 +78,7 @@ kotlin {
             api(libs.kodein.android)
             api(libs.moko.resources.compose)
         }
-        val androidUnitTest by getting {
+        androidUnitTest {
             // must use an android test SourceSet!
             android.sourceSets.getByName("test").resources.srcDir("src/commonTest/resources")
             dependencies {
@@ -168,7 +166,7 @@ licenseReport {
     renderers = arrayOf(JsonReportRenderer())
 }
 
-val createBuildInfo = tasks.create("createBuildInfo") {
+val createBuildInfo = tasks.register("createBuildInfo") {
     val buildInfoDir = "${layout.buildDirectory.get()}/generated/buildInfo/"
 
     // the task's configuration
@@ -185,7 +183,7 @@ val createBuildInfo = tasks.create("createBuildInfo") {
     }
 }
 
-val copyIosLicenses = tasks.create<Copy>("copyIosLicenses") {
+val copyIosLicenses = tasks.register<Copy>("copyIosLicenses") {
     val licenseTask = tasks.getByName("generateLicenseReport")
     val iosLicensesDir = "${layout.buildDirectory.get()}/generated/iosLicenses"
 
