@@ -41,7 +41,7 @@ kotlin {
 
 android {
     namespace = "template.composemultiplatform.android"
-    compileSdk = 35
+    compileSdk = 36
     defaultConfig {
         applicationId = "template.composemultiplatform.android"
         minSdk = 21
@@ -66,7 +66,7 @@ fun getVersionCodeFromGit() : Int {
 
 fun getVersionNameFromGit() : String {
     val result = providers.exec {
-        commandLine("git", "describe", "--tags", "--dirty")
+        commandLine("git", "describe", "--tags", "--dirty", "--always")
     }
     return result.standardOutput.asText.get().trim()
 }

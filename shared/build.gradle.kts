@@ -144,7 +144,7 @@ multiplatformResources {
 
 android {
     namespace = "template.composemultiplatform.shared"
-    compileSdk = 35
+    compileSdk = 36
     defaultConfig {
         minSdk = 21
     }
@@ -204,7 +204,7 @@ afterEvaluate {
 
 fun getVersionNameFromGit() : String {
     val result = providers.exec {
-        commandLine("git", "describe", "--tags", "--dirty")
+        commandLine("git", "describe", "--tags", "--dirty", "--always")
     }
     return result.standardOutput.asText.get().trim()
 }
