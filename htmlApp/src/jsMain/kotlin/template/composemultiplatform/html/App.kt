@@ -1,6 +1,5 @@
 package template.composemultiplatform.html
 
-import androidx.compose.runtime.*
 import com.arkivanov.decompose.DefaultComponentContext
 import com.arkivanov.decompose.ExperimentalDecomposeApi
 import com.arkivanov.decompose.router.stack.webhistory.DefaultWebHistoryController
@@ -15,7 +14,7 @@ import org.kodein.di.DI
 import org.w3c.dom.Document
 import org.w3c.notifications.*
 import template.composemultiplatform.html.root.RootContent
-import template.composemultiplatform.shared.MR
+import template.composemultiplatform.shared.SharedRes
 import template.composemultiplatform.shared.common.data.SqlDriverFactoryProvider
 import template.composemultiplatform.shared.common.di.getMainDI
 import template.composemultiplatform.shared.common.resources.Localizer
@@ -24,7 +23,7 @@ import template.composemultiplatform.shared.root.RootComponent
 @OptIn(ExperimentalDecomposeApi::class)
 suspend fun main() {
     val lifecycle = LifecycleRegistry()
-    val strings = MR.strings.stringsLoader.getOrLoad()
+    val strings = SharedRes.strings.stringsLoader.getOrLoad()
 
     // imports
     import<Any>("@fontsource/roboto")

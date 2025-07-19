@@ -1,9 +1,11 @@
 package template.composemultiplatform.html.test
 
 import androidx.compose.runtime.*
+
 import dev.icerock.moko.resources.provider.JsStringProvider
 import js.import.importAsync
 import js.promise.Promise
+import js.promise.await
 import kotlinx.browser.document
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,10 +16,10 @@ import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.dom.Text
 import org.jetbrains.compose.web.testutils.ComposeWebExperimentalTestsApi
 import org.jetbrains.compose.web.testutils.runTest
-import template.composemultiplatform.html.test.common.findChild
-import template.composemultiplatform.html.test.common.setIndeterminateProgressToZero
-import template.composemultiplatform.shared.MR
+import org.w3c.dom.HTMLElement
+import template.composemultiplatform.shared.SharedRes
 import template.composemultiplatform.shared.common.Testable
+import kotlin.test.assertTrue
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
@@ -35,24 +37,19 @@ inline fun <reified T: Testable> runMobileTest(
     // when executing multiple tests, old testContainers have to be removed
     document.getElementById("root")?.remove()
 
-    // importAsyncs
+    // imports
     importAsync<Any>("@fontsource/roboto").await()
     importAsync<Any>("@material-symbols/font-400/outlined.css").await()
-    val crypto: dynamic = importAsync<Any>("crypto-es/lib/md5.js").await()
     val htmlToImage: dynamic = importAsync<Any>("html-to-image").await()
-    val chaiKarma: dynamic = importAsync<Any>("chai-karma-snapshot").await()
-    val chai: dynamic = importAsync<Any>("chai").await()
-    val describe: (title: String, fn: (suite: dynamic) -> dynamic) -> dynamic = js("describe")
-    val it: (title: String, fn: () -> dynamic) -> dynamic = js("it")
+    val crypto: dynamic = importAsync<Any>("crypto-es/lib/md5.js").await()
+    val snapshotState: SnapshotState = js("window.__snapshot__")
 
-    val strings = MR.strings.stringsLoader.getOrLoad()
+    val strings = SharedRes.strings.stringsLoader.getOrLoad()
     val finishedFlow = MutableStateFlow(false)
     val pngs = mutableMapOf<String, String>()
 
     val viewport = js("viewport")
     viewport.set(viewportWidth, viewportHeight)
-
-    chai.use(chaiKarma.matchSnapshot)
 
     composition {
         var preview by remember { mutableStateOf<T?>(null) }
@@ -78,6 +75,9 @@ inline fun <reified T: Testable> runMobileTest(
                     ?.findChild("root") // get test container
                     ?.setIndeterminateProgressToZero()
 
+                // clean focus
+                (document.activeElement as? HTMLElement)?.blur()
+
                 delay(500)
 
                 val imgPromise: Promise<String> = htmlToImage.toPng(domElement)
@@ -85,30 +85,10 @@ inline fun <reified T: Testable> runMobileTest(
                 pngs[it.testTitle] = imgBase64
             }
 
-            // save doms after composition has finished
-            // dont save them during composition as creating the tests disturbs composition
-            describe("${T::class.simpleName}") { _ ->
-                pngs.forEach { entry ->
-                    it(entry.key) {
-                        val hash = crypto.MD5(entry.value).toString()
-                        println("\nRendered snapshot ${entry.key} to base64 with ${entry.value.length} chars \n")
-                        println("\n$hash\n")
-
-                        // only for debugging! Prints large chars and makes testing buggy
-                        // println("\n${entry.value}\n")
-
-                        if (useHashes) {
-                            chai.assert.matchSnapshot(hash)
-                        } else {
-                            chai.assert.matchSnapshot(entry.value)
-                        }
-                    }
-                }
-            }
-
             finishedFlow.value = true
         }
 
+        // should match attributes of the real root element
         Div(
             attrs = {
                 id("root")
@@ -118,13 +98,18 @@ inline fun <reified T: Testable> runMobileTest(
                     width((viewportWidth - 2).px)
                     maxHeight((viewportHeight - 2).px)
                     maxWidth((viewportWidth - 2).px)
+
+                    display(DisplayStyle.Flex)
+                    flexDirection(FlexDirection.Column)
+                    alignItems(AlignItems.Stretch)
+                    justifyContent(JustifyContent.Center)
                 }
             }
         ) {
             preview?.let {
                 content(it, strings)
-            } ?: kotlin.run {
-                Text("Initing ui")
+            } ?: run {
+                Text("Initiating ui")
             }
         }
     }
@@ -133,5 +118,31 @@ inline fun <reified T: Testable> runMobileTest(
         .takeWhile { !it }
         .collect()
 
+    // save doms after composition has finished
+    // don't save them during composition as creating the tests disturbs composition
+    pngs.forEach { (key, value) ->
+        val hash = crypto.MD5(value).toString()
+
+        val snapshotPath = listOfNotNull(T::class.simpleName, key).toTypedArray()
+        if (useHashes) {
+            snapshotState.matchSnapshot(snapshotPath, 0, hash)
+        } else {
+            snapshotState.matchSnapshot(snapshotPath, 0, value)
+        }
+    }
+
     delay(1000)
+}
+
+fun SnapshotState.matchSnapshot(path: Array<String>, index: Int, received: String) {
+    val snapshot = get(path, index)
+
+    if (snapshot == null) {
+        set(path, index, received)
+    } else {
+        val expected = snapshot.code
+        val pass = match(received, expected)
+
+        assertTrue(pass, "\n Snapshots differed: \nGot \n $received \nExpected \n $expected \n")
+    }
 }
