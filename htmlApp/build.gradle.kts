@@ -32,6 +32,7 @@ kotlin {
             dependencies {
                 implementation(compose.html.core)
                 implementation(compose.runtime)
+                implementation(compose.animation)
                 implementation(libs.wrappers.js)
                 implementation(libs.wrappers.web)
                 implementation(libs.decompose.compose)
@@ -78,7 +79,7 @@ licenseReport {
 }
 
 multiplatformResources {
-    resourcesPackage.set("app.pathoshare.web")
+    resourcesPackage.set("template.composemultiplatform.web")
     resourcesClassName = "WebRes"
 }
 
