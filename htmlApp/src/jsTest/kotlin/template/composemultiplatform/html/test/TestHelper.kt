@@ -17,8 +17,6 @@ import org.jetbrains.compose.web.dom.Text
 import org.jetbrains.compose.web.testutils.ComposeWebExperimentalTestsApi
 import org.jetbrains.compose.web.testutils.runTest
 import org.w3c.dom.HTMLElement
-import template.composemultiplatform.html.test.common.findChild
-import template.composemultiplatform.html.test.common.setIndeterminateProgressToZero
 import template.composemultiplatform.shared.SharedRes
 import template.composemultiplatform.shared.common.Testable
 import kotlin.test.assertTrue
