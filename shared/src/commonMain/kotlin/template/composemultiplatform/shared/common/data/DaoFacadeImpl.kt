@@ -1,7 +1,5 @@
 package template.composemultiplatform.shared.common.data
 
-import app.cash.sqldelight.async.coroutines.awaitAsList
-import kotlinx.datetime.Clock
 import template.composemultiplatform.shared.common.domain.RabbitModel
 
 class DaoFacadeImpl(private val driverFactory: DriverFactory) : DaoFacade {

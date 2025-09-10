@@ -1,6 +1,5 @@
 import com.github.jk1.license.render.JsonReportRenderer
 import org.apache.tools.ant.taskdefs.condition.Os
-import java.io.ByteArrayOutputStream
 import java.util.*
 
 plugins {
@@ -45,8 +44,6 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                implementation(libs.kotlinx.datetime)
-                implementation(libs.uuid)
                 implementation(libs.sqldelight.coroutines)
 
                 implementation(compose.foundation)
@@ -80,7 +77,7 @@ kotlin {
             api(libs.kodein.android)
             api(libs.moko.resources.compose)
         }
-        val androidUnitTest by getting {
+        androidUnitTest {
             // must use an android test SourceSet!
             android.sourceSets.getByName("test").resources.srcDir("src/commonTest/resources")
             dependencies {
@@ -91,9 +88,8 @@ kotlin {
 
         jsMain.dependencies {
             api(libs.sqldelight.webWorker)
-            implementation(npm("@sqlite.org/sqlite-wasm", "3.45.1-build1"))
-            implementation(devNpm("copy-webpack-plugin", "12.0.2"))
-            // ktor
+            implementation(npm("@sqlite.org/sqlite-wasm", "3.50.1-build1"))
+            implementation(devNpm("copy-webpack-plugin", "13.0.0"))            // ktor
             api(libs.ktor.client.js)
         }
         jsTest.dependencies {
@@ -148,7 +144,7 @@ multiplatformResources {
 
 android {
     namespace = "template.composemultiplatform.shared"
-    compileSdk = 35
+    compileSdk = 36
     defaultConfig {
         minSdk = 21
     }
@@ -168,7 +164,7 @@ licenseReport {
     renderers = arrayOf(JsonReportRenderer())
 }
 
-val createBuildInfo = tasks.create("createBuildInfo") {
+val createBuildInfo = tasks.register("createBuildInfo") {
     val buildInfoDir = "${layout.buildDirectory.get()}/generated/buildInfo/"
 
     // the task's configuration
@@ -185,7 +181,7 @@ val createBuildInfo = tasks.create("createBuildInfo") {
     }
 }
 
-val copyIosLicenses = tasks.create<Copy>("copyIosLicenses") {
+val copyIosLicenses = tasks.register<Copy>("copyIosLicenses") {
     val licenseTask = tasks.getByName("generateLicenseReport")
     val iosLicensesDir = "${layout.buildDirectory.get()}/generated/iosLicenses"
 
@@ -207,15 +203,8 @@ afterEvaluate {
 }
 
 fun getVersionNameFromGit() : String {
-    return try {
-        val stdout = ByteArrayOutputStream()
-        providers.exec {
-            commandLine("git", "describe", "--tags", "--dirty")
-            standardOutput = stdout
-        }
-        stdout.toString().trim()
+    val result = providers.exec {
+        commandLine("git", "describe", "--tags", "--dirty", "--always")
     }
-    catch (_: Exception) {
-        ""
-    }
+    return result.standardOutput.asText.get().trim()
 }

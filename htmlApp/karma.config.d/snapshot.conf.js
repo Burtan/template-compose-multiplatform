@@ -1,12 +1,12 @@
 ;(function(config) {
     config.frameworks.push("snapshot")
     config.frameworks.push("mocha-snapshot")
-    config.preprocessors["../../../../webApp/src/jsTest/snapshots/**/*.md"] = ["snapshot"]
-    config.files.push("../../../../webApp/src/jsTest/snapshots/**/*.md")
+    config.preprocessors["../../../../htmlApp/src/jsTest/snapshots/**/*.md"] = ["snapshot"]
+    config.files.push("../../../../htmlApp/src/jsTest/snapshots/**/*.md")
 
     function resolve(basePath, suiteName) {
       const path = require("path");
-      const base = basePath + "/../../../../webApp/src/jsTest/";
+      const base = basePath + "/../../../../htmlApp/src/jsTest/";
       return path.join(base, "snapshots", suiteName + ".md");
     }
 
